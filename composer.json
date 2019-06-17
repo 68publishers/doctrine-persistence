@@ -1,0 +1,32 @@
+{
+	"name": "68publishers/doctrine-persistence",
+	"description": "Abstraction layers and utils for data persistence via Doctrine - transaction object, entity persisting via DTOs and Persisters etc.",
+	"keywords": ["68publishers", "doctrine", "persistence", "nette", "doctrine-persistence"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Tomáš Glawaty",
+			"email": "tomasglawaty@icloud.com"
+		}
+	],
+	"require": {
+		"php": "~7.1",
+		"nette/di": "~2.4",
+		"nette/utils": "~2.4",
+		"nette/caching": "~2.4",
+		"nette/reflection": "~2.4",
+		"doctrine/orm": "^2.5"
+	},
+	"require-dev": {
+		"friendsofphp/php-cs-fixer": "^2.0",
+		"nette/tester": "^1.7"
+	},
+	"autoload": {
+		"classmap": ["src/"],
+		"files": []
+	},
+	"autoload-dev": {
+		"classmap": ["tests/"],
+		"files": []
+	}
+}
