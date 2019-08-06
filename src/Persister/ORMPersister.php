@@ -32,7 +32,7 @@ abstract class ORMPersister implements IPersister
 	}
 
 	/**
-	 * Arguments are DTO and ID
+	 * Arguments are DTO
 	 *
 	 * @return callable
 	 */
