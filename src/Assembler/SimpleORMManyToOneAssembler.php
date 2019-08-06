@@ -32,4 +32,14 @@ final class SimpleORMManyToOneAssembler extends ORMManyToOneAssembler
 	{
 		$this->associationFieldName = $associationFieldName;
 	}
+
+	/**
+	 * @param string[] $orderBy
+	 *
+	 * @return void
+	 */
+	public function setOrderBy(array $orderBy): void
+	{
+		$this->orderBy = $orderBy;
+	}
 }

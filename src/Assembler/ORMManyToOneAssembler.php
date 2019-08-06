@@ -12,6 +12,9 @@ abstract class ORMManyToOneAssembler extends ORMAssembler implements IManyToOneA
 	/** @var string */
 	protected $ownerEntityClass;
 
+	/** @var NULL|string[] */
+	protected $orderBy;
+
 	/**
 	 * NULL === try detect
 	 *
@@ -61,7 +64,7 @@ abstract class ORMManyToOneAssembler extends ORMAssembler implements IManyToOneA
 
 		$entities = $this->em->getRepository($this->entityClass)->findBy([
 			$this->associationFieldName => $ownerIdentifier,
-		]);
+		], is_array($this->orderBy) ? $this->orderBy : NULL);
 
 		return new Doctrine\Common\Collections\ArrayCollection(array_map(function ($object) {
 			return $this->assembleDTOFromEntity($object);
