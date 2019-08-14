@@ -188,12 +188,6 @@ final class Transaction implements ITransaction
 
 			$this->em->flush();
 			$connection->commit();
-
-			$this->onDone($this->result);
-
-			$this->dispatchLastPostFlushEvent();
-
-			return $this->result;
 		} catch (\Throwable $e) {
 			$this->em->close();
 			$connection->rollBack();
@@ -204,5 +198,10 @@ final class Transaction implements ITransaction
 
 			throw $e;
 		}
+
+		$this->onDone($this->result);
+		$this->dispatchLastPostFlushEvent();
+
+		return $this->result;
 	}
 }
