@@ -72,7 +72,7 @@ abstract class ORMAssembler implements IAssembler
 		$entity = $this->em->getRepository($this->entityClass)->find($identifier);
 
 		if (NULL === $entity) {
-			throw SixtyEightPublishers\DoctrinePersistence\Exception\EntityNotFoundException::error((string) $identifier, $this->entityClass);
+			throw new SixtyEightPublishers\DoctrinePersistence\Exception\EntityNotFoundException($this->entityClass, $identifier);
 		}
 
 		return $entity;

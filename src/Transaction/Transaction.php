@@ -32,6 +32,9 @@ final class Transaction implements ITransaction
 	/** @var callable[] */
 	private $callbacks = [];
 
+	/** @var callable[] */
+	private $catchCallbacks = [];
+
 	/**
 	 * Called after transaction's rollback. The Exception is thrown anyway after this callbacks.
 	 *
@@ -111,6 +114,30 @@ final class Transaction implements ITransaction
 		}
 	}
 
+	/**
+	 * @param \Throwable $e
+	 *
+	 * @return bool
+	 */
+	private function dispatchCatchCallbacks(\Throwable $e): bool
+	{
+		$processed = FALSE;
+
+		foreach ($this->catchCallbacks as $className => $callbacks) {
+			if (!$e instanceof $className) {
+				continue;
+			}
+
+			foreach ($callbacks as $callback) {
+				$callback($e);
+			}
+
+			$processed = TRUE;
+		}
+
+		return $processed;
+	}
+
 	/**************** interface \SixtyEightPublishers\DoctrinePersistence\Transaction\ITransaction ****************/
 
 	/**
@@ -119,6 +146,16 @@ final class Transaction implements ITransaction
 	public function then(callable $callback): ITransaction
 	{
 		$this->callbacks[] = $callback;
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function catch(string $exceptionClass, callable $callback): ITransaction
+	{
+		$this->catchCallbacks[$exceptionClass][] = $callback;
 
 		return $this;
 	}
@@ -193,7 +230,13 @@ final class Transaction implements ITransaction
 			$connection->rollBack();
 
 			self::$transactionCallbacks = [];
+			$exceptionAlreadyProcessed = $this->dispatchCatchCallbacks($e);
 
+			if (!$e instanceof SixtyEightPublishers\DoctrinePersistence\Exception\PersistenceException) {
+				$e = new SixtyEightPublishers\DoctrinePersistence\Exception\PersistenceException('Persistence failed.', $e->getCode(), $e);
+			}
+
+			$e->setAlreadyProcessed($exceptionAlreadyProcessed);
 			$this->onError($e);
 
 			throw $e;

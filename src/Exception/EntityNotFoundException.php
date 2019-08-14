@@ -4,20 +4,45 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\DoctrinePersistence\Exception;
 
-final class EntityNotFoundException extends RuntimeException
+final class EntityNotFoundException extends PersistenceException
 {
+	/** @var string  */
+	private $entityClassName;
+
+	/** @var mixed  */
+	private $identifier;
+
 	/**
-	 * @param string $identifier
 	 * @param string $entityClassName
-	 *
-	 * @return \SixtyEightPublishers\DoctrinePersistence\Exception\EntityNotFoundException
+	 * @param $identifier
+	 * @param int             $code
+	 * @param \Throwable|NULL $previous
 	 */
-	public static function error(string $identifier, string $entityClassName): self
+	public function __construct(string $entityClassName, $identifier, int $code = 0, \Throwable $previous = NULL)
 	{
-		return new static(sprintf(
-			'Entity %s with identifier %s not found',
+		parent::__construct(sprintf(
+			'Entity %s with identifier %s not found.',
 			$entityClassName,
-			$identifier
-		));
+			(string) $identifier
+		), $code, $previous);
+
+		$this->entityClassName = $entityClassName;
+		$this->identifier = $identifier;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getEntityClassName(): string
+	{
+		return $this->entityClassName;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getIdentifier()
+	{
+		return $this->identifier;
 	}
 }
