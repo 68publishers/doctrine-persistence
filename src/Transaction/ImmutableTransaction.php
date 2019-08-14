@@ -26,15 +26,6 @@ final class ImmutableTransaction implements ITransaction
 		$this->arguments = $arguments;
 	}
 
-	/**
-	 * @return bool|mixed
-	 * @throws \Throwable
-	 */
-	public function __invoke()
-	{
-		return $this->run();
-	}
-
 	/**************** interface \SixtyEightPublishers\DoctrinePersistence\Transaction\ITransaction ****************/
 
 	/**
@@ -52,6 +43,16 @@ final class ImmutableTransaction implements ITransaction
 	public function done(callable $callback): ITransaction
 	{
 		$this->transaction->done($callback);
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function catch(string $exceptionClass, callable $callback): ITransaction
+	{
+		$this->transaction->catch($exceptionClass, $callback);
 
 		return $this;
 	}
@@ -82,5 +83,13 @@ final class ImmutableTransaction implements ITransaction
 	public function run()
 	{
 		return $this->transaction->run(...$this->arguments);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __invoke()
+	{
+		return $this->run();
 	}
 }
