@@ -59,4 +59,15 @@ final class DuplicatedValueException extends PersistenceException
 	{
 		return $this->value;
 	}
+
+	/**
+	 * @param string $entityClassName
+	 * @param string $columnName
+	 *
+	 * @return bool
+	 */
+	public function is(string $entityClassName, string $columnName): bool
+	{
+		return $entityClassName === $this->getEntityClassName() && $columnName === $this->getColumnName();
+	}
 }
