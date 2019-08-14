@@ -11,7 +11,7 @@ use SixtyEightPublishers;
 /**
  * @method void onFinally($result)
  * @method void onDone($result)
- * @method void onError(\Throwable $e)
+ * @method void onError(SixtyEightPublishers\DoctrinePersistence\Exception\PersistenceException $e)
  */
 final class Transaction implements ITransaction
 {
@@ -239,7 +239,11 @@ final class Transaction implements ITransaction
 			$e->setAlreadyProcessed($exceptionAlreadyProcessed);
 			$this->onError($e);
 
-			throw $e;
+			if (FALSE === $exceptionAlreadyProcessed && 0 >= count($this->onError)) {
+				throw $e;
+			}
+
+			return NULL;
 		}
 
 		$this->onDone($this->result);
