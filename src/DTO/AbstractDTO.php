@@ -31,6 +31,18 @@ abstract class AbstractDTO
 	abstract public function fill($entity): void;
 
 	/**
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function __isset(string $name): bool
+	{
+		$this->checkProperty($name);
+
+		return NULL !== ($this->values[$name] ?? NULL);
+	}
+
+	/**
 	 * @param mixed $name
 	 * @param mixed $value
 	 */
