@@ -19,7 +19,11 @@
 	},
 	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^2.0",
-		"nette/tester": "^1.7"
+		"nette/tester": "^1.7",
+		"ramsey/uuid": "^3.8"
+	},
+	"suggest": {
+		"ramsey/uuid": "If you want to use UuidStringIdentifier class."
 	},
 	"autoload": {
 		"classmap": ["src/"],

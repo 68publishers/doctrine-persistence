@@ -28,7 +28,7 @@ interface IAssembler
 	public function assembleDTOFromIdentifier($identifier): SixtyEightPublishers\DoctrinePersistence\DTO\AbstractDTO;
 
 	/**
-	 * @param $identifier
+	 * @param mixed $identifier
 	 *
 	 * @return object
 	 */
