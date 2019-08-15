@@ -69,6 +69,10 @@ abstract class ORMAssembler implements IAssembler
 	 */
 	public function assembleEntityFromIdentifier($identifier)
 	{
+		if ($identifier instanceof SixtyEightPublishers\DoctrinePersistence\Identifier\IIdentifier) {
+			$identifier = $identifier->getValue();
+		}
+
 		$entity = $this->em->getRepository($this->entityClass)->find($identifier);
 
 		if (NULL === $entity) {
