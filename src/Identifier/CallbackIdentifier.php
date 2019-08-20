@@ -22,6 +22,24 @@ final class CallbackIdentifier implements IIdentifier
 		$this->cb = $cb;
 	}
 
+	/**
+	 * @param \Throwable|NULL $previous
+	 *
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Exception\MalformedIdentifierException
+	 */
+	private function createMalformedIdentifierException(?\Throwable $previous = NULL): SixtyEightPublishers\DoctrinePersistence\Exception\MalformedIdentifierException
+	{
+		if ($previous instanceof SixtyEightPublishers\DoctrinePersistence\Exception\MalformedIdentifierException) {
+			return $previous;
+		}
+
+		return new SixtyEightPublishers\DoctrinePersistence\Exception\MalformedIdentifierException(
+			'Entity identifier is malformed and can\'t be parsed.',
+			0,
+			$previous
+		);
+	}
+
 	/**************** interface \SixtyEightPublishers\DoctrinePersistence\Identifier ****************/
 
 	/**
@@ -33,18 +51,11 @@ final class CallbackIdentifier implements IIdentifier
 			$cb = $this->cb;
 			$value = $cb();
 		} catch (\Throwable $e) {
+			throw $this->createMalformedIdentifierException($e);
 		}
 
-		if (!isset($value)) {
-			if (!isset($e) || !$e instanceof SixtyEightPublishers\DoctrinePersistence\Exception\MalformedIdentifierException) {
-				$e = new SixtyEightPublishers\DoctrinePersistence\Exception\MalformedIdentifierException(
-					'Entity identifier is malformed and can\'t be parsed.',
-					0,
-					$e ?? NULL
-				);
-			}
-
-			throw $e;
+		if (NULL ===  $value) {
+			throw $this->createMalformedIdentifierException();
 		}
 
 		return $value;
