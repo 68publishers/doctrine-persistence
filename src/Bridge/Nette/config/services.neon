@@ -1,0 +1,11 @@
+services:
+	transaction_factory:
+		type: SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface
+		factory: SixtyEightPublishers\DoctrinePersistence\TransactionFactory(
+			@Doctrine\ORM\EntityManagerInterface,
+			@extension.finally_callback_queue_invoker
+		)
+
+	finally_callback_queue_invoker:
+		autowired: no
+		type: SixtyEightPublishers\DoctrinePersistence\FinallyCallbackQueueInvoker

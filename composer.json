@@ -1,6 +1,6 @@
 {
 	"name": "68publishers/doctrine-persistence",
-	"description": "Abstraction layers and utils for data persistence via Doctrine - transaction object, entity persisting via DTOs and Persisters etc.",
+	"description": "Persistence utils like transaction objects in promise style.",
 	"keywords": ["68publishers", "doctrine", "persistence", "nette", "doctrine-persistence"],
 	"license": "MIT",
 	"authors": [
@@ -10,27 +10,46 @@
 		}
 	],
 	"require": {
-		"php": "~7.1",
-		"nette/di": "~2.4",
-		"nette/utils": "~2.4",
-		"nette/caching": "~2.4",
-		"nette/reflection": "~2.4",
-		"doctrine/orm": "^2.5"
+		"php": "^7.3",
+		"nette/utils": "^2.4 | ^3.0",
+		"doctrine/orm": "^2.7"
 	},
 	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^2.0",
-		"nette/tester": "^1.7",
-		"ramsey/uuid": "^3.8"
+		"mockery/mockery": "^1.4",
+		"nette/bootstrap": "^2.4 | ^3.0",
+		"nette/di": "^2.4.16 | ^3.0.3",
+		"nette/tester": "^2.3.4",
+		"roave/security-advisories": "dev-master"
 	},
 	"suggest": {
-		"ramsey/uuid": "If you want to use UuidStringIdentifier class."
+		"nette/di": "For integration into Nette Framework."
 	},
 	"autoload": {
-		"classmap": ["src/"],
-		"files": []
+		"psr-4": {
+			"SixtyEightPublishers\\DoctrinePersistence\\": "src/"
+		}
 	},
 	"autoload-dev": {
-		"classmap": ["tests/"],
-		"files": []
+		"psr-4": {
+			"SixtyEightPublishers\\DoctrinePersistence\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"sort-packages": true
+	},
+	"scripts": {
+		"tests": [
+			"@tests:lowest",
+			"@tests:highest"
+		],
+		"tests:lowest" : [
+			"@composer update --no-progress --prefer-dist --prefer-lowest --prefer-stable",
+			"vendor/bin/tester ./tests"
+		],
+		"tests:highest" : [
+			"@composer update --no-progress --prefer-dist --prefer-stable",
+			"vendor/bin/tester ./tests"
+		]
 	}
 }
