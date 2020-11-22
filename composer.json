@@ -1,6 +1,6 @@
 {
 	"name": "68publishers/doctrine-persistence",
-	"description": "Persistence utils like transaction objects in promise style.",
+	"description": "Persistence utils like transaction objects.",
 	"keywords": ["68publishers", "doctrine", "persistence", "nette", "doctrine-persistence"],
 	"license": "MIT",
 	"authors": [

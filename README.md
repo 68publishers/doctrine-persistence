@@ -1,6 +1,6 @@
 # Doctrine Persistence
 
-Abstraction layers and utils for data persistence in Nette Framework via Doctrine - transaction object, entity persisting via DTOs and Persisters etc. ... 
+Persistence utils like transaction objects.
 
 ## Installation
 
@@ -12,9 +12,9 @@ composer require 68publishers/doctrine-persistence
 
 then you can register extension into DIC:
 
-```yaml
+```neon
 extensions:
-    doctrine_persistence: SixtyEightPublishers\DoctrinePersistence\DI\DoctrinePersistenceExtension
+    68publishers.doctrine_persistence: SixtyEightPublishers\DoctrinePersistence\Bridge\Nette\DI\DoctrinePersistenceExtension
 ```
 
 ## Contributing
