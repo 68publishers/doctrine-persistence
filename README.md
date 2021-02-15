@@ -28,5 +28,5 @@ vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run
 and
 
 ```bash
-vendor/bin/tester ./tests
+$ composer run tests
 ```

@@ -2,34 +2,32 @@
 
 declare(strict_types=1);
 
-namespace SixtyEightPublishers\DoctrinePersistence\Exception;
+namespace SixtyEightPublishers\DoctrinePersistence\Exception\Persistence;
 
-final class DuplicatedValueException extends PersistenceException
+use Throwable;
+
+abstract class AbstractInvalidValueException extends PersistenceException
 {
 	/** @var string  */
-	private $entityClassName;
+	protected $entityClassName;
 
 	/** @var string  */
-	private $columnName;
+	protected $columnName;
 
 	/** @var mixed  */
-	private $value;
+	protected $value;
 
 	/**
+	 * @param string $message
 	 * @param string $entityClassName
 	 * @param string $columnName
 	 * @param $value
 	 * @param int             $code
-	 * @param \Throwable|null $previous
+	 * @param \Throwable|NULL $previous
 	 */
-	public function __construct(string $entityClassName, string $columnName, $value, int $code = 0, \Throwable $previous = NULL)
+	public function __construct(string $message, string $entityClassName, string $columnName, $value, int $code = 0, Throwable $previous = NULL)
 	{
-		parent::__construct(sprintf(
-			'Duplicated value %s for column %s::$%s',
-			(string) $value,
-			$entityClassName,
-			$columnName
-		), $code, $previous);
+		parent::__construct($message, $code, $previous);
 
 		$this->entityClassName = $entityClassName;
 		$this->columnName = $columnName;
@@ -68,6 +66,6 @@ final class DuplicatedValueException extends PersistenceException
 	 */
 	public function is(string $entityClassName, string $columnName): bool
 	{
-		return $entityClassName === $this->getEntityClassName() && $columnName === $this->getColumnName();
+		return (is_a($entityClassName, $this->getEntityClassName(), TRUE) || is_subclass_of($entityClassName, $this->getEntityClassName(), TRUE)) && $columnName === $this->getColumnName();
 	}
 }

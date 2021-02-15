@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SixtyEightPublishers\DoctrinePersistence\Exception;
+namespace SixtyEightPublishers\DoctrinePersistence\Exception\Persistence;
+
+use Throwable;
 
 final class EntityNotFoundException extends PersistenceException
 {
@@ -18,7 +20,7 @@ final class EntityNotFoundException extends PersistenceException
 	 * @param int             $code
 	 * @param \Throwable|NULL $previous
 	 */
-	public function __construct(string $entityClassName, $identifier, int $code = 0, \Throwable $previous = NULL)
+	public function __construct(string $entityClassName, $identifier, int $code = 0, Throwable $previous = NULL)
 	{
 		parent::__construct(sprintf(
 			'Entity %s with identifier %s not found.',
