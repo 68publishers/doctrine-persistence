@@ -26,4 +26,12 @@ final class RuntimeException extends \RuntimeException implements ExceptionInter
 			$name
 		));
 	}
+
+	/**
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Exception\RuntimeException
+	 */
+	public static function noActiveTransaction(): self
+	{
+		return new static('There is no active transaction.');
+	}
 }

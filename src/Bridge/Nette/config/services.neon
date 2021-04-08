@@ -3,9 +3,14 @@ services:
 		type: SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface
 		factory: SixtyEightPublishers\DoctrinePersistence\TransactionFactory(
 			@Doctrine\ORM\EntityManagerInterface,
-			@extension.finally_callback_queue_invoker
+			@extension.finally_callback_queue_invoker,
+			@extension.transaction_tracker
 		)
 
 	finally_callback_queue_invoker:
 		autowired: no
 		type: SixtyEightPublishers\DoctrinePersistence\FinallyCallbackQueueInvoker
+
+	transaction_tracker:
+		type: SixtyEightPublishers\DoctrinePersistence\TransactionTrackerInterface
+		factory: SixtyEightPublishers\DoctrinePersistence\TransactionTracker

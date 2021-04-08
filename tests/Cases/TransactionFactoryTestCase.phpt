@@ -9,6 +9,7 @@ use Tester\Assert;
 use Tester\TestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use SixtyEightPublishers\DoctrinePersistence\TransactionFactory;
+use SixtyEightPublishers\DoctrinePersistence\TransactionTracker;
 use SixtyEightPublishers\DoctrinePersistence\TransactionInterface;
 use SixtyEightPublishers\DoctrinePersistence\FinallyCallbackQueueInvoker;
 
@@ -33,8 +34,9 @@ class TransactionFactoryTestCase extends TestCase
 	{
 		$em = Mockery::mock(EntityManagerInterface::class);
 		$finallyCallbackQueueInvoker = Mockery::mock(FinallyCallbackQueueInvoker::class);
+		$transactionTracker = new TransactionTracker();
 
-		$transactionFactory = new TransactionFactory($em, $finallyCallbackQueueInvoker);
+		$transactionFactory = new TransactionFactory($em, $finallyCallbackQueueInvoker, $transactionTracker);
 
 		Assert::type(TransactionInterface::class, $transactionFactory->create(static function () {
 		}, []));
