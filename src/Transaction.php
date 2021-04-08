@@ -27,6 +27,9 @@ final class Transaction implements TransactionInterface
 	/** @var \SixtyEightPublishers\DoctrinePersistence\FinallyCallbackQueueInvoker  */
 	private $finallyCallbackQueueInvoker;
 
+	/** @var \SixtyEightPublishers\DoctrinePersistence\TransactionTrackerInterface  */
+	private $transactionTracker;
+
 	/** @var iterable  */
 	private $arguments;
 
@@ -48,13 +51,15 @@ final class Transaction implements TransactionInterface
 	/**
 	 * @param \Doctrine\ORM\EntityManagerInterface                                  $em
 	 * @param \SixtyEightPublishers\DoctrinePersistence\FinallyCallbackQueueInvoker $finallyCallbackQueueInvoker
+	 * @param \SixtyEightPublishers\DoctrinePersistence\TransactionTrackerInterface $transactionTracker
 	 * @param callable                                                              $callback
 	 * @param iterable                                                              $arguments
 	 */
-	public function __construct(EntityManagerInterface $em, FinallyCallbackQueueInvoker $finallyCallbackQueueInvoker, callable $callback, iterable $arguments = [])
+	public function __construct(EntityManagerInterface $em, FinallyCallbackQueueInvoker $finallyCallbackQueueInvoker, TransactionTrackerInterface $transactionTracker, callable $callback, iterable $arguments = [])
 	{
 		$this->em = $em;
 		$this->finallyCallbackQueueInvoker = $finallyCallbackQueueInvoker;
+		$this->transactionTracker = $transactionTracker;
 		$this->callbacks = [$callback];
 		$this->arguments = $arguments;
 	}
@@ -67,7 +72,7 @@ final class Transaction implements TransactionInterface
 		$callbacks = $this->callbacks;
 		$firstCallback = array_shift($callbacks);
 
-		$transaction = new static($this->em, $this->finallyCallbackQueueInvoker, $firstCallback, $arguments);
+		$transaction = new static($this->em, $this->finallyCallbackQueueInvoker, $this->transactionTracker, $firstCallback, $arguments);
 
 		foreach ($callbacks as $callback) {
 			$transaction->then($callback);
@@ -152,6 +157,7 @@ final class Transaction implements TransactionInterface
 		$this->executed = TRUE;
 		$result = NULL;
 
+		$this->transactionTracker->track($this);
 		$this->em->getConnection()->beginTransaction();
 
 		try {
