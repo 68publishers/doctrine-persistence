@@ -167,6 +167,10 @@ final class Transaction implements TransactionInterface
 		} catch (Throwable $e) {
 			$result = NULL;
 			$errorContext = $this->processError($e);
+
+			if (!$errorContext->isDefaultBehaviourPrevented()) {
+				throw $errorContext->getError();
+			}
 		} finally {
 			$this->processFinally($result, $errorContext ?? NULL);
 		}
@@ -241,10 +245,6 @@ final class Transaction implements TransactionInterface
 			}
 		} catch (Throwable $e) {
 			$errorContext = new ErrorContext($e);
-		}
-
-		if (!$errorContext->isDefaultBehaviourPrevented()) {
-			throw $errorContext->getError();
 		}
 
 		return $errorContext;
