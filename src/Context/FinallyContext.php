@@ -81,4 +81,12 @@ final class FinallyContext implements FinallyContextInterface
 			throw new TransactionMustBeCommittedException();
 		}
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function withError(?Throwable $error): FinallyContextInterface
+	{
+		return new self($this->connection, $this->result, $error);
+	}
 }

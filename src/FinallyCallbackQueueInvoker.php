@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\DoctrinePersistence;
 
+use Throwable;
 use SixtyEightPublishers\DoctrinePersistence\Context\FinallyContextInterface;
 use SixtyEightPublishers\DoctrinePersistence\Exception\TransactionMustBeCommittedException;
 
@@ -24,9 +25,11 @@ class FinallyCallbackQueueInvoker
 	}
 
 	/**
+	 * @param \Throwable|NULL $lastError
+	 *
 	 * @return void
 	 */
-	public function invoke(): void
+	public function invoke(?Throwable $lastError = NULL): void
 	{
 		/**
 		 * @var callable                                                                  $callback
@@ -46,7 +49,7 @@ class FinallyCallbackQueueInvoker
 			}
 
 			if ($context->isEverythingCommitted()) {
-				$callback($context);
+				$callback($context->withError($lastError));
 				unset($this->callbacks[$key]);
 			}
 		}

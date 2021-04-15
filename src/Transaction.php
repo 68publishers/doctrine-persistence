@@ -264,12 +264,13 @@ final class Transaction implements TransactionInterface
 			$evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
 		}
 
-		$finallyContext = new FinallyContext($this->em->getConnection(), $result, NULL !== $errorContext ? $errorContext->getError() : NULL);
+		$lastError = NULL !== $errorContext ? $errorContext->getError() : NULL;
+		$finallyContext = new FinallyContext($this->em->getConnection(), $result, $lastError);
 
 		foreach ($this->finallyCallbacks as $finallyCallback) {
 			$this->finallyCallbackQueueInvoker->enqueue($finallyCallback, $finallyContext);
 		}
 
-		$this->finallyCallbackQueueInvoker->invoke();
+		$this->finallyCallbackQueueInvoker->invoke($lastError);
 	}
 }

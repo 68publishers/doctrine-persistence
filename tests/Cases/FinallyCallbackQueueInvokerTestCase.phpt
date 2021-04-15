@@ -32,7 +32,7 @@ class FinallyCallbackQueueInvokerTestCase extends TestCase
 	{
 		$everythingCommitted = FALSE;
 		$firstCallbackCounter = $secondCallbackCounter = $thirdCallbackCounter = 0;
-		$context = Mockery::mock(FinallyContextInterface::class);
+		$context = $this->createContextMock($everythingCommitted);
 
 		$firstCallback = static function (FinallyContextInterface $context) use (&$firstCallbackCounter) {
 			$context->needsEverythingCommitted();
@@ -47,16 +47,6 @@ class FinallyCallbackQueueInvokerTestCase extends TestCase
 			$context->needsEverythingCommitted();
 			$thirdCallbackCounter++;
 		};
-
-		$context->shouldReceive('needsEverythingCommitted')->andReturnUsing(static function () use (&$everythingCommitted) {
-			if (!$everythingCommitted) {
-				throw new TransactionMustBeCommittedException();
-			}
-		});
-
-		$context->shouldReceive('isEverythingCommitted')->andReturnUsing(static function () use (&$everythingCommitted) {
-			return $everythingCommitted;
-		});
 
 		$finallyCallbackQueueInvoker = new FinallyCallbackQueueInvoker();
 
@@ -94,6 +84,32 @@ class FinallyCallbackQueueInvokerTestCase extends TestCase
 		Assert::same(1, $firstCallbackCounter);
 		Assert::same(1, $secondCallbackCounter);
 		Assert::same(1, $thirdCallbackCounter);
+	}
+
+	/**
+	 * @param bool $everythingCommitted
+	 *
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\FinallyContextInterface
+	 */
+	private function createContextMock(bool &$everythingCommitted): FinallyContextInterface
+	{
+		$context = Mockery::mock(FinallyContextInterface::class);
+
+		$context->shouldReceive('needsEverythingCommitted')->andReturnUsing(static function () use (&$everythingCommitted) {
+			if (!$everythingCommitted) {
+				throw new TransactionMustBeCommittedException();
+			}
+		});
+
+		$context->shouldReceive('isEverythingCommitted')->andReturnUsing(static function () use (&$everythingCommitted) {
+			return $everythingCommitted;
+		});
+
+		$context->shouldReceive('withError')->andReturnUsing(function () use (&$everythingCommitted) {
+			return $this->createContextMock($everythingCommitted);
+		});
+
+		return $context;
 	}
 }
 

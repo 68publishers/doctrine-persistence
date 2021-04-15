@@ -40,4 +40,11 @@ interface FinallyContextInterface
 	 * @throws \SixtyEightPublishers\DoctrinePersistence\Exception\TransactionMustBeCommittedException
 	 */
 	public function needsEverythingCommitted(): void;
+
+	/**
+	 * @param \Throwable|NULL $error
+	 *
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\FinallyContextInterface
+	 */
+	public function withError(?Throwable $error): self;
 }
