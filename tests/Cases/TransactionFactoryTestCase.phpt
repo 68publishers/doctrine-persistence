@@ -17,9 +17,6 @@ require __DIR__ . '/../bootstrap.php';
 
 class TransactionFactoryTestCase extends TestCase
 {
-	/**
-	 * @return void
-	 */
 	protected function tearDown(): void
 	{
 		parent::tearDown();
@@ -27,19 +24,39 @@ class TransactionFactoryTestCase extends TestCase
 		Mockery::close();
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testTransactionShouldBeCreated(): void
+	{
+		$transactionFactory = $this->createTransactionFactory();
+
+		Assert::type(TransactionInterface::class, $transactionFactory->create(static function () {
+		}, []));
+	}
+
+	public function testTransactionExtendersShouldByInvoker(): void
+	{
+		$transactionFactory = $this->createTransactionFactory();
+		$extendersInvocations = [];
+
+		$transactionFactory->addTransactionExtender(function (TransactionInterface $transaction) use (&$extendersInvocations) {
+			$extendersInvocations[] = 'first-0';
+		}, 0);
+
+		$transactionFactory->addTransactionExtender(function (TransactionInterface $transaction) use (&$extendersInvocations) {
+			$extendersInvocations[] = 'second-10';
+		}, 10);
+
+		Assert::type(TransactionInterface::class, $transactionFactory->create(static function () {
+		}, []));
+		Assert::same(['second-10', 'first-0'], $extendersInvocations);
+	}
+
+	private function createTransactionFactory(): TransactionFactory
 	{
 		$em = Mockery::mock(EntityManagerInterface::class);
 		$finallyCallbackQueueInvoker = Mockery::mock(FinallyCallbackQueueInvoker::class);
 		$transactionTracker = new TransactionTracker();
 
-		$transactionFactory = new TransactionFactory($em, $finallyCallbackQueueInvoker, $transactionTracker);
-
-		Assert::type(TransactionInterface::class, $transactionFactory->create(static function () {
-		}, []));
+		return new TransactionFactory($em, $finallyCallbackQueueInvoker, $transactionTracker);
 	}
 }
 

@@ -15,9 +15,6 @@ require __DIR__ . '/../../bootstrap.php';
 
 class ArgumentBagTestCase extends TestCase
 {
-	/**
-	 * @return void
-	 */
 	public function testArgumentBagConsistency(): void
 	{
 		$argumentBag = new ArgumentBag([
@@ -47,20 +44,9 @@ class ArgumentBagTestCase extends TestCase
 			$argumentBag->get('undefined');
 		}, InvalidArgumentException::class, 'Missing argument with name "undefined".');
 
-		# ::add()
-		Assert::noError(static function () use ($argumentBag) {
-			$argumentBag->add('c', 'something');
-		});
-
-		Assert::same('something', $argumentBag->get('c'));
-
-		Assert::exception(static function () use ($argumentBag) {
-			$argumentBag->add('a', 'something');
-		}, InvalidArgumentException::class, 'Argument with a key "a" is already defined.');
-
 		# Countable
-		Assert::same(6, $argumentBag->count());
-		Assert::same(6, count($argumentBag));
+		Assert::same(5, $argumentBag->count());
+		Assert::same(5, count($argumentBag));
 
 		// IteratorAggregate
 		Assert::equal([
@@ -69,7 +55,6 @@ class ArgumentBagTestCase extends TestCase
 			'foo' => $foo,
 			'bar' => NULL,
 			'baz' => $baz,
-			'c' => 'something',
 		], iterator_to_array($argumentBag));
 
 		// ::withArguments(?, FALSE)
@@ -92,7 +77,6 @@ class ArgumentBagTestCase extends TestCase
 			'foo' => $foo,
 			'bar' => NULL,
 			'baz' => $baz,
-			'c' => 'something',
 			'product' => 'Iphone',
 		], iterator_to_array($mergedArgumentBag));
 	}
