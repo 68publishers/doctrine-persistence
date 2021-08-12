@@ -5,29 +5,26 @@ declare(strict_types=1);
 namespace SixtyEightPublishers\DoctrinePersistence\Context;
 
 use Throwable;
-use Doctrine\DBAL\Connection;
 use SixtyEightPublishers\DoctrinePersistence\Helper\TransactionHelper;
 use SixtyEightPublishers\DoctrinePersistence\Exception\TransactionMustBeCommittedException;
 
 final class FinallyContext implements FinallyContextInterface
 {
-	/** @var \Doctrine\DBAL\Connection  */
-	private $connection;
+	use CommonContextProxyTrait;
 
 	/** @var mixed  */
 	private $result;
 
-	/** @var \Throwable|NULL  */
-	private $error;
+	private ?Throwable $error;
 
 	/**
-	 * @param \Doctrine\DBAL\Connection $connection
-	 * @param mixed                     $result
-	 * @param \Throwable|NULL           $error
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Context\CommonContextInterface $commonContext
+	 * @param mixed                                                                    $result
+	 * @param \Throwable|NULL                                                          $error
 	 */
-	public function __construct(Connection $connection, $result, ?Throwable $error)
+	public function __construct(CommonContextInterface $commonContext, $result, ?Throwable $error)
 	{
-		$this->connection = $connection;
+		$this->commonContext = $commonContext;
 		$this->result = $result;
 		$this->error = $error;
 	}
@@ -61,7 +58,7 @@ final class FinallyContext implements FinallyContextInterface
 	 */
 	public function getTransactionNestedLevel(): int
 	{
-		return $this->connection->getTransactionNestingLevel();
+		return $this->getEntityManager()->getConnection()->getTransactionNestingLevel();
 	}
 
 	/**
@@ -69,7 +66,7 @@ final class FinallyContext implements FinallyContextInterface
 	 */
 	public function isEverythingCommitted(): bool
 	{
-		return TransactionHelper::isEverythingCommitted($this->connection);
+		return TransactionHelper::isEverythingCommitted($this->getEntityManager()->getConnection());
 	}
 
 	/**
@@ -87,6 +84,6 @@ final class FinallyContext implements FinallyContextInterface
 	 */
 	public function withError(?Throwable $error): FinallyContextInterface
 	{
-		return new self($this->connection, $this->result, $error);
+		return new self($this->commonContext, $this->result, $error);
 	}
 }

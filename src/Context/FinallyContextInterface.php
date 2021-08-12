@@ -6,7 +6,7 @@ namespace SixtyEightPublishers\DoctrinePersistence\Context;
 
 use Throwable;
 
-interface FinallyContextInterface
+interface FinallyContextInterface extends CommonContextInterface
 {
 	/**
 	 * Last result

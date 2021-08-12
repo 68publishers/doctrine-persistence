@@ -19,14 +19,6 @@ interface ArgumentBagInterface extends IteratorAggregate, Countable
 
 	/**
 	 * @param string $name
-	 * @param mixed  $value
-	 *
-	 * @return void
-	 */
-	public function add(string $name, $value): void;
-
-	/**
-	 * @param string $name
 	 *
 	 * @return mixed
 	 * @throws \SixtyEightPublishers\DoctrinePersistence\Exception\InvalidArgumentException

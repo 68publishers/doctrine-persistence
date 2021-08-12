@@ -8,14 +8,13 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class TransactionFactory implements TransactionFactoryInterface
 {
-	/** @var \Doctrine\ORM\EntityManagerInterface  */
-	private $em;
+	private EntityManagerInterface $em;
 
-	/** @var \SixtyEightPublishers\DoctrinePersistence\FinallyCallbackQueueInvoker  */
-	private $finallyCallbackQueueInvoker;
+	private FinallyCallbackQueueInvoker $finallyCallbackQueueInvoker;
 
-	/** @var \SixtyEightPublishers\DoctrinePersistence\TransactionTrackerInterface  */
-	private $transactionTracker;
+	private TransactionTrackerInterface $transactionTracker;
+
+	private array $transactionsExtenders = [];
 
 	/**
 	 * @param \Doctrine\ORM\EntityManagerInterface                                  $em
@@ -30,10 +29,33 @@ final class TransactionFactory implements TransactionFactoryInterface
 	}
 
 	/**
+	 * @param callable $callback
+	 * @param int      $priority
+	 *
+	 * @return void
+	 */
+	public function addTransactionExtender(callable $callback, int $priority = 0): void
+	{
+		$this->transactionsExtenders[$priority][] = $callback;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function create(callable $callback, iterable $arguments = []): TransactionInterface
 	{
-		return new Transaction($this->em, $this->finallyCallbackQueueInvoker, $this->transactionTracker, $callback, $arguments);
+		$transaction = new Transaction($this->em, $this->finallyCallbackQueueInvoker, $this->transactionTracker, $callback, $arguments);
+
+		$groupedExtenders = $this->transactionsExtenders;
+
+		krsort($groupedExtenders);
+
+		foreach ($groupedExtenders as $extenders) {
+			foreach ($extenders as $extender) {
+				$extender($transaction);
+			}
+		}
+
+		return $transaction;
 	}
 }

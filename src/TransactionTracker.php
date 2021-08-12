@@ -11,7 +11,7 @@ use SixtyEightPublishers\DoctrinePersistence\Exception\InvalidArgumentException;
 final class TransactionTracker implements TransactionTrackerInterface
 {
 	/** @var \SixtyEightPublishers\DoctrinePersistence\TransactionInterface[] */
-	private $transactions = [];
+	private array $transactions = [];
 
 	/**
 	 * {@inheritDoc}

@@ -8,20 +8,21 @@ use Throwable;
 
 final class ErrorContext implements ErrorContextInterface
 {
-	/** @var \Throwable  */
-	private $error;
+	use CommonContextProxyTrait;
 
-	/** @var bool  */
-	private $propagationStopped = FALSE;
+	private Throwable $error;
 
-	/** @var bool  */
-	private $defaultBehaviourPrevented = FALSE;
+	private bool $propagationStopped = FALSE;
+
+	private bool $defaultBehaviourPrevented = FALSE;
 
 	/**
-	 * @param \Throwable $error
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Context\CommonContextInterface $commonContext
+	 * @param \Throwable                                                               $error
 	 */
-	public function __construct(Throwable $error)
+	public function __construct(CommonContextInterface $commonContext, Throwable $error)
 	{
+		$this->commonContext = $commonContext;
 		$this->error = $error;
 	}
 
@@ -36,17 +37,21 @@ final class ErrorContext implements ErrorContextInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function stopPropagation(): void
+	public function stopPropagation(): ErrorContextInterface
 	{
 		$this->propagationStopped = TRUE;
+
+		return $this;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function preventDefault(): void
+	public function preventDefault(): ErrorContextInterface
 	{
 		$this->defaultBehaviourPrevented = TRUE;
+
+		return $this;
 	}
 
 	/**

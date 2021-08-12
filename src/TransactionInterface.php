@@ -48,6 +48,16 @@ interface TransactionInterface
 	 *         return $result;
 	 *     });
 	 *
+	 *     $transaction->then(function (TransactionContextInterface $context) {
+	 *         $user = $context->getPreviousResult();
+	 *         $settings = new UserSettings(...);
+	 *
+	 *         $user->setSettings($settings);
+	 *         $context->persist($settings);
+	 *
+	 *         return $user;
+	 *     });
+	 *
 	 *     $user = $transaction->run();
 	 * ```
 	 *
@@ -59,13 +69,14 @@ interface TransactionInterface
 
 	/**
 	 * This callback is called when a current transaction successfully ends.
-	 * The only parameter is a value returned from the first (initial) callback.
+	 * the first parameter is an instance of SuccessContextInterface
+	 * The second parameter is a value returned from the last callback.
 	 *
 	 * Note: everything may not be committed if the transaction is wrapped into a another transaction!
 	 *
 	 * ```php
 	 * <?php
-	 *     $transaction->success(function ($value) {});
+	 *     $transaction->success(function (SuccessContextInterface $context, $result) {});
 	 * ```
 	 *
 	 * @param callable $callback

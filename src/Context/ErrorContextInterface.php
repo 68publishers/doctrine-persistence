@@ -6,7 +6,7 @@ namespace SixtyEightPublishers\DoctrinePersistence\Context;
 
 use Throwable;
 
-interface ErrorContextInterface
+interface ErrorContextInterface extends CommonContextInterface
 {
 	/**
 	 * @return \Throwable
@@ -16,16 +16,16 @@ interface ErrorContextInterface
 	/**
 	 * Next callbacks will be skipped
 	 *
-	 * @return void
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface
 	 */
-	public function stopPropagation(): void;
+	public function stopPropagation(): self;
 
 	/**
 	 * Default behaviour will be prevented => an exception will not be thrown
 	 *
-	 * @return void
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface
 	 */
-	public function preventDefault(): void;
+	public function preventDefault(): self;
 
 	/**
 	 * @return bool

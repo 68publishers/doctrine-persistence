@@ -8,8 +8,7 @@ use Throwable;
 
 final class EntityNotFoundException extends PersistenceException
 {
-	/** @var string  */
-	private $entityClassName;
+	private string $entityClassName;
 
 	/** @var mixed  */
 	private $identifier;

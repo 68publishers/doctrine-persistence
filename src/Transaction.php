@@ -9,44 +9,45 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBag;
 use SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBag;
 use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContext;
+use SixtyEightPublishers\DoctrinePersistence\Context\CommonContext;
 use SixtyEightPublishers\DoctrinePersistence\Context\FinallyContext;
+use SixtyEightPublishers\DoctrinePersistence\Context\SuccessContext;
 use SixtyEightPublishers\DoctrinePersistence\Helper\CallbackInvoker;
 use SixtyEightPublishers\DoctrinePersistence\Helper\TransactionHelper;
+use SixtyEightPublishers\DoctrinePersistence\Context\TransactionContext;
 use SixtyEightPublishers\DoctrinePersistence\Exception\RuntimeException;
 use SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface;
 use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface;
+use SixtyEightPublishers\DoctrinePersistence\Context\CommonContextInterface;
+use SixtyEightPublishers\DoctrinePersistence\Context\TransactionContextInterface;
 use SixtyEightPublishers\DoctrinePersistence\Exception\TransactionUncatchableExceptionInterface;
 
 final class Transaction implements TransactionInterface
 {
-	/** @var \Doctrine\ORM\EntityManagerInterface  */
-	private $em;
+	private EntityManagerInterface $em;
 
-	/** @var \SixtyEightPublishers\DoctrinePersistence\FinallyCallbackQueueInvoker  */
-	private $finallyCallbackQueueInvoker;
+	private FinallyCallbackQueueInvoker $finallyCallbackQueueInvoker;
 
-	/** @var \SixtyEightPublishers\DoctrinePersistence\TransactionTrackerInterface  */
-	private $transactionTracker;
+	private TransactionTrackerInterface $transactionTracker;
 
-	/** @var iterable  */
-	private $arguments;
+	private iterable $arguments;
 
 	/** @var callable[]  */
-	private $callbacks;
+	private array $callbacks;
 
 	/** @var callable[]  */
-	private $successCallbacks = [];
+	private array $successCallbacks = [];
 
 	/** @var callable[]  */
-	private $errorCallbacks = [];
+	private array $errorCallbacks = [];
 
 	/** @var callable[]  */
-	private $finallyCallbacks = [];
+	private array $finallyCallbacks = [];
 
-	/** @var bool  */
-	private $executed = FALSE;
+	private bool $executed = FALSE;
 
 	/**
 	 * @param \Doctrine\ORM\EntityManagerInterface                                  $em
@@ -145,6 +146,8 @@ final class Transaction implements TransactionInterface
 		}
 
 		$namedArgumentBag = $this->arguments instanceof ArgumentBagInterface ? $this->arguments : new ArgumentBag($this->arguments);
+		$commonContext = new CommonContext($this->em, $namedArgumentBag, new BadgeBag());
+
 		$typeHintedArgumentBag = new ArgumentBag([
 			EntityManagerInterface::class => $this->em,
 			EntityManager::class => $this->em,
@@ -161,18 +164,18 @@ final class Transaction implements TransactionInterface
 		$this->em->getConnection()->beginTransaction();
 
 		try {
-			$result = $this->processTransaction($namedArgumentBag, $typeHintedArgumentBag);
+			$result = $this->processTransaction($namedArgumentBag, $typeHintedArgumentBag, $commonContext);
 		} catch (TransactionUncatchableExceptionInterface $e) {
 			throw $e;
 		} catch (Throwable $e) {
 			$result = NULL;
-			$errorContext = $this->processError($e);
+			$errorContext = $this->processError($commonContext, $e);
 
 			if (!$errorContext->isDefaultBehaviourPrevented()) {
 				throw $errorContext->getError();
 			}
 		} finally {
-			$this->processFinally($result, $errorContext ?? NULL);
+			$this->processFinally($result, $commonContext, $errorContext ?? NULL);
 		}
 
 		return $result;
@@ -189,19 +192,27 @@ final class Transaction implements TransactionInterface
 	}
 
 	/**
-	 * @param \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface $namedArgumentBag
-	 * @param \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface $typeHintedArgumentBag
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface  $namedArgumentBag
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface  $typeHintedArgumentBag
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Context\CommonContextInterface $commonContext
 	 *
 	 * @return mixed
 	 * @throws \Doctrine\DBAL\ConnectionException
 	 */
-	private function processTransaction(ArgumentBagInterface $namedArgumentBag, ArgumentBagInterface $typeHintedArgumentBag)
+	private function processTransaction(ArgumentBagInterface $namedArgumentBag, ArgumentBagInterface $typeHintedArgumentBag, CommonContextInterface $commonContext)
 	{
 		$result = NULL;
 
 		foreach ($this->callbacks as $callback) {
+			$transactionContext = new TransactionContext($commonContext, $result);
+
 			$namedArgumentBag = $namedArgumentBag->withArguments([
 				self::ARGUMENT_NAME_RESULT => $result,
+			], TRUE);
+
+			$typeHintedArgumentBag = $typeHintedArgumentBag->withArguments([
+				TransactionContextInterface::class => $transactionContext,
+				TransactionContext::class => $transactionContext,
 			], TRUE);
 
 			$result = CallbackInvoker::invokeTransactionCallback($callback, $namedArgumentBag, $typeHintedArgumentBag);
@@ -211,20 +222,21 @@ final class Transaction implements TransactionInterface
 		$this->em->getConnection()->commit();
 
 		foreach ($this->successCallbacks as $successCallback) {
-			$successCallback($result);
+			$successCallback(new SuccessContext($commonContext, $result), $result);
 		}
 
 		return $result;
 	}
 
 	/**
-	 * @param \Throwable $e
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Context\CommonContextInterface $commonContext
+	 * @param \Throwable                                                               $e
 	 *
 	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface
 	 * @throws \Doctrine\DBAL\ConnectionException
 	 * @throws \Throwable
 	 */
-	private function processError(Throwable $e): ErrorContextInterface
+	private function processError(CommonContextInterface $commonContext, Throwable $e): ErrorContextInterface
 	{
 		$connection = $this->em->getConnection();
 
@@ -233,7 +245,7 @@ final class Transaction implements TransactionInterface
 			$connection->rollBack();
 		}
 
-		$errorContext = new ErrorContext($e);
+		$errorContext = new ErrorContext($commonContext, $e);
 
 		try {
 			foreach ($this->errorCallbacks as $errorCallback) {
@@ -244,7 +256,7 @@ final class Transaction implements TransactionInterface
 				CallbackInvoker::tryInvokeErrorCallback($errorCallback, $errorContext);
 			}
 		} catch (Throwable $e) {
-			$errorContext = new ErrorContext($e);
+			$errorContext = new ErrorContext($commonContext, $e);
 		}
 
 		return $errorContext;
@@ -252,11 +264,12 @@ final class Transaction implements TransactionInterface
 
 	/**
 	 * @param mixed                                                                        $result
-	 * @param \SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface|NULL $errorContext
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Context\CommonContextInterface     $commonContext
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface|null $errorContext
 	 *
 	 * @return void
 	 */
-	public function processFinally($result, ?ErrorContextInterface $errorContext): void
+	public function processFinally($result, CommonContextInterface $commonContext, ?ErrorContextInterface $errorContext): void
 	{
 		$evm = $this->em->getEventManager();
 
@@ -265,7 +278,7 @@ final class Transaction implements TransactionInterface
 		}
 
 		$lastError = NULL !== $errorContext ? $errorContext->getError() : NULL;
-		$finallyContext = new FinallyContext($this->em->getConnection(), $result, $lastError);
+		$finallyContext = new FinallyContext($commonContext, $result, $lastError);
 
 		foreach ($this->finallyCallbacks as $finallyCallback) {
 			$this->finallyCallbackQueueInvoker->enqueue($finallyCallback, $finallyContext);
