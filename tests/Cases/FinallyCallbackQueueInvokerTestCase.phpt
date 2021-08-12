@@ -15,9 +15,6 @@ require __DIR__ . '/../bootstrap.php';
 
 class FinallyCallbackQueueInvokerTestCase extends TestCase
 {
-	/**
-	 * @return void
-	 */
 	protected function tearDown(): void
 	{
 		parent::tearDown();
@@ -25,9 +22,6 @@ class FinallyCallbackQueueInvokerTestCase extends TestCase
 		Mockery::close();
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testCallbacksInvocation(): void
 	{
 		$everythingCommitted = FALSE;
@@ -86,11 +80,6 @@ class FinallyCallbackQueueInvokerTestCase extends TestCase
 		Assert::same(1, $thirdCallbackCounter);
 	}
 
-	/**
-	 * @param bool $everythingCommitted
-	 *
-	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\FinallyContextInterface
-	 */
 	private function createContextMock(bool &$everythingCommitted): FinallyContextInterface
 	{
 		$context = Mockery::mock(FinallyContextInterface::class);

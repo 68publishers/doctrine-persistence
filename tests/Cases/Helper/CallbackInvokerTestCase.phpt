@@ -22,9 +22,6 @@ require __DIR__ . '/../../bootstrap.php';
 
 class CallbackInvokerTestCase extends TestCase
 {
-	/**
-	 * {@inheritDoc}
-	 */
 	protected function tearDown(): void
 	{
 		parent::tearDown();
@@ -32,9 +29,6 @@ class CallbackInvokerTestCase extends TestCase
 		Mockery::close();
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeTransactionCallbackWithNamedArgumentsOnly(): void
 	{
 		[$namedArgumentBag, $typeHintedArgumentBag] = $this->createArgumentBags();
@@ -52,9 +46,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::true($called);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeTransactionCallbackWithTypeHintedArgumentsOnly(): void
 	{
 		[$namedArgumentBag, $typeHintedArgumentBag] = $this->createArgumentBags();
@@ -69,9 +60,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::true($called);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeTransactionCallbackWithCombinedArguments(): void
 	{
 		[$namedArgumentBag, $typeHintedArgumentBag] = $this->createArgumentBags();
@@ -90,9 +78,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::true($called);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeTransactionCallbackWithMissingButNullableArguments(): void
 	{
 		[$namedArgumentBag, $typeHintedArgumentBag] = $this->createArgumentBags();
@@ -112,9 +97,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::true($called);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeTransactionCallbackWithMissingArgumentsWithDefaultValues(): void
 	{
 		[$namedArgumentBag, $typeHintedArgumentBag] = $this->createArgumentBags();
@@ -131,9 +113,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::true($called);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldThrowExceptionWhenCallbacksContainsMissingRequiredArguments(): void
 	{
 		Assert::exception(
@@ -155,9 +134,6 @@ class CallbackInvokerTestCase extends TestCase
 		);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeErrorCallbackWithoutSpecificException(): void
 	{
 		$error = new RuntimeException();
@@ -173,9 +149,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::true($called);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeErrorCallbackGenericException(): void
 	{
 		$error = new RuntimeException();
@@ -202,9 +175,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::true($called);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testShouldInvokeErrorCallbackWithSpecificException(): void
 	{
 		# 1 - RuntimeException
@@ -235,9 +205,7 @@ class CallbackInvokerTestCase extends TestCase
 
 		Assert::true($called);
 	}
-	/**
-	 * @return void
-	 */
+
 	public function testShouldNotInvokeErrorCallbackWithSpecificException(): void
 	{
 		# First
@@ -252,11 +220,6 @@ class CallbackInvokerTestCase extends TestCase
 		Assert::false($called);
 	}
 
-	/**
-	 * @param \Throwable $error
-	 *
-	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface
-	 */
 	private function createErrorContext(Throwable $error): ErrorContextInterface
 	{
 		$context = Mockery::mock(ErrorContextInterface::class);
@@ -266,9 +229,6 @@ class CallbackInvokerTestCase extends TestCase
 		return $context;
 	}
 
-	/**
-	 * @return \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface[]
-	 */
 	private function createArgumentBags(): array
 	{
 		$namedArgumentBag = new ArgumentBag([

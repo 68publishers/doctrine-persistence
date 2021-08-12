@@ -18,9 +18,6 @@ class TransactionHelperTestCase extends TestCase
 	/** @var \Doctrine\DBAL\Connection|NULL */
 	private $connection;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -31,9 +28,6 @@ class TransactionHelperTestCase extends TestCase
 		$this->connection->shouldReceive('getTransactionNestingLevel')->once()->andReturn(0);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	protected function tearDown(): void
 	{
 		parent::tearDown();
@@ -41,18 +35,12 @@ class TransactionHelperTestCase extends TestCase
 		Mockery::close();
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testEverythingCommittedWithConnectionArgument(): void
 	{
 		Assert::false(TransactionHelper::isEverythingCommitted($this->connection));
 		Assert::true(TransactionHelper::isEverythingCommitted($this->connection));
 	}
 
-	/**
-	 * @return void
-	 */
 	public function testEverythingCommittedWithEntityManagerArgument(): void
 	{
 		$em = Mockery::mock(EntityManagerInterface::class);

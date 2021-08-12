@@ -1,0 +1,12 @@
+services:
+	extender1:
+		type: SixtyEightPublishers\DoctrinePersistence\Tests\Fixture\DummyTransactionExtender
+		autowired: no
+		tags:
+			- 68publishers.doctrine_persistence.transaction_factory_extender
+
+	extender2:
+		type: SixtyEightPublishers\DoctrinePersistence\Tests\Fixture\DummyTransactionExtender
+		autowired: no
+		tags:
+			68publishers.doctrine_persistence.transaction_factory_extender: 10

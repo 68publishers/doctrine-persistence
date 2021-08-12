@@ -6,26 +6,20 @@ namespace SixtyEightPublishers\DoctrinePersistence\Tests\Cases\Bridge\Nette\DI;
 
 use Mockery;
 use Tester\Assert;
+use ReflectionClass;
 use Tester\TestCase;
 use Nette\Configurator;
 use Nette\DI\Container;
 use Nette\DI\Definitions\Statement;
 use Doctrine\ORM\EntityManagerInterface;
-use Nette\DI\Statement as Nette24Statement;
+use SixtyEightPublishers\DoctrinePersistence\TransactionFactory;
 use SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface;
 use SixtyEightPublishers\DoctrinePersistence\Bridge\Nette\DI\DoctrinePersistenceExtension;
 
 require __DIR__ . '/../../../../bootstrap.php';
 
-if (!class_exists(Statement::class)) {
-	class_alias(Nette24Statement::class, Statement::class);
-}
-
 class DoctrinePersistenceExtensionTestCase extends TestCase
 {
-	/**
-	 * @return void
-	 */
 	protected function tearDown(): void
 	{
 		parent::tearDown();
@@ -33,10 +27,7 @@ class DoctrinePersistenceExtensionTestCase extends TestCase
 		Mockery::close();
 	}
 
-	/**
-	 * @return void
-	 */
-	public function testIntegration(): void
+	public function testBaseIntegration(): void
 	{
 		/** @var \Nette\DI\Container|NULL $container */
 		$container = NULL;
@@ -48,11 +39,31 @@ class DoctrinePersistenceExtensionTestCase extends TestCase
 		Assert::type(TransactionFactoryInterface::class, $container->getByType(TransactionFactoryInterface::class));
 	}
 
-	/**
-	 * @param string|NULL $config
-	 *
-	 * @return \Nette\DI\Container
-	 */
+	public function testIntegrationWithTransactionExtenders(): void
+	{
+		/** @var \Nette\DI\Container|NULL $container */
+		$container = NULL;
+
+		Assert::noError(function () use (&$container) {
+			$container = $this->createContainer(CONFIG_DIR . '/transaction_extender.neon');
+		});
+
+		$transactionFactory = $container->getByType(TransactionFactoryInterface::class);
+		$extender1Service = $container->getService('extender1');
+		$extender2Service = $container->getService('extender2');
+
+		Assert::type(TransactionFactoryInterface::class, $transactionFactory);
+
+		$property = (new ReflectionClass(TransactionFactory::class))->getProperty('transactionsExtenders');
+
+		$property->setAccessible(TRUE);
+
+		Assert::equal([
+			0 => [$extender1Service],
+			10 => [$extender2Service],
+		], $property->getValue($transactionFactory));
+	}
+
 	private function createContainer(?string $config = NULL): Container
 	{
 		$configurator = new Configurator();
