@@ -7,13 +7,13 @@ $finder = PhpCsFixer\Finder::create()
 	->name('*.phpt')
 ;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
 	->setUsingCache(FALSE)
 	->setIndent("\t")
 	->setRules([
 		'@PSR2' => TRUE,
 		'array_syntax' => ['syntax' => 'short'],
-		'trailing_comma_in_multiline_array' => true,
+		'trailing_comma_in_multiline' => TRUE,
 		'constant_case' => [
 			'case' => 'upper',
 		],

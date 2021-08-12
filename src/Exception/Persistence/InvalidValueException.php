@@ -8,8 +8,7 @@ use Throwable;
 
 final class InvalidValueException extends AbstractInvalidValueException
 {
-	/** @var string|NULL */
-	private $reason;
+	private ?string $reason;
 
 	/** @var mixed|object|NULL */
 	private $entity;

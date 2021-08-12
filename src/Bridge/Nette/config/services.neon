@@ -1,6 +1,10 @@
 services:
 	transaction_factory:
 		type: SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface
+		factory: @extension.transaction_factory.base
+
+	transaction_factory.base:
+		type: SixtyEightPublishers\DoctrinePersistence\TransactionFactoryInterface
 		factory: SixtyEightPublishers\DoctrinePersistence\TransactionFactory(
 			@Doctrine\ORM\EntityManagerInterface,
 			@extension.finally_callback_queue_invoker,

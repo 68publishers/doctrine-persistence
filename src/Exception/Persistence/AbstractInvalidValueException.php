@@ -8,11 +8,9 @@ use Throwable;
 
 abstract class AbstractInvalidValueException extends PersistenceException
 {
-	/** @var string  */
-	protected $entityClassName;
+	protected string $entityClassName;
 
-	/** @var string  */
-	protected $columnName;
+	protected string $columnName;
 
 	/** @var mixed  */
 	protected $value;

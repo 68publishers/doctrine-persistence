@@ -28,7 +28,7 @@ jobs:
         install:
           - travis_retry composer update --no-progress --prefer-dist
         script:
-          - vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run
+          - composer run php-cs-fixer
 
     -   stage: Code Coverage
         install:

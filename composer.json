@@ -10,16 +10,17 @@
 		}
 	],
 	"require": {
-		"php": "^7.3",
+		"php": "^7.4",
 		"ext-json": "*",
-		"nette/utils": "^2.4 | ^3.0",
+		"nette/utils": "^3.0",
 		"doctrine/orm": "^2.7"
 	},
 	"require-dev": {
-		"friendsofphp/php-cs-fixer": "^2.0",
+		"friendsofphp/php-cs-fixer": "^2.19",
 		"mockery/mockery": "^1.4",
-		"nette/bootstrap": "^2.4 | ^3.0",
-		"nette/di": "^2.4.16 | ^3.0.3",
+		"nette/application": "^3.0.6",
+		"nette/bootstrap": "^3.0",
+		"nette/di": "^3.0.3",
 		"nette/tester": "^2.3.4",
 		"roave/security-advisories": "dev-master"
 	},
@@ -40,6 +41,7 @@
 		"sort-packages": true
 	},
 	"scripts": {
+		"php-cs-fixer": "vendor/bin/php-cs-fixer fix -v",
 		"tests": [
 			"@tests:lowest",
 			"@tests:highest"

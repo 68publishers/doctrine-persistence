@@ -10,8 +10,7 @@ use SixtyEightPublishers\DoctrinePersistence\Exception\TransactionMustBeCommitte
 
 class FinallyCallbackQueueInvoker
 {
-	/** @var array  */
-	private $callbacks = [];
+	private array $callbacks = [];
 
 	/**
 	 * @param callable                                                                  $callback

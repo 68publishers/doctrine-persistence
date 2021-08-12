@@ -13,7 +13,7 @@ final class DuplicatedValueException extends AbstractInvalidValueException
 	 * @param string $columnName
 	 * @param $value
 	 * @param int             $code
-	 * @param \Throwable|null $previous
+	 * @param \Throwable|NULL $previous
 	 */
 	public function __construct(string $entityClassName, string $columnName, $value, int $code = 0, Throwable $previous = NULL)
 	{

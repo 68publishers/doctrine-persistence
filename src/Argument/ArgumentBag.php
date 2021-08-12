@@ -9,8 +9,7 @@ use SixtyEightPublishers\DoctrinePersistence\Exception\InvalidArgumentException;
 
 class ArgumentBag implements ArgumentBagInterface
 {
-	/** @var array  */
-	private $arguments = [];
+	private array $arguments = [];
 
 	/**
 	 * @param iterable $values
@@ -38,21 +37,6 @@ class ArgumentBag implements ArgumentBagInterface
 		}
 
 		return new static($newArguments);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function add(string $name, $value): void
-	{
-		if ($this->has($name)) {
-			throw new InvalidArgumentException(sprintf(
-				'Argument with a key "%s" is already defined.',
-				$name
-			));
-		}
-
-		$this->arguments[$name] = $value;
 	}
 
 	/**
