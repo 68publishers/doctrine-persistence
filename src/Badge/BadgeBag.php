@@ -25,6 +25,18 @@ class BadgeBag implements BadgeBagInterface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function add(BadgeInterface ...$badges): BadgeBagInterface
+	{
+		foreach ($badges as $badge) {
+			$this->badges[get_class($badge)][] = $badge;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function last(string $badgeClassName): ?BadgeInterface
 	{
 		return isset($this->badges[$badgeClassName]) ? end($this->badges[$badgeClassName]) : NULL;

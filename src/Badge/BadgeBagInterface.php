@@ -14,6 +14,13 @@ interface BadgeBagInterface
 	public function with(BadgeInterface ...$badges): self;
 
 	/**
+	 * @param \SixtyEightPublishers\DoctrinePersistence\Badge\BadgeInterface ...$badges
+	 *
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBagInterface
+	 */
+	public function add(BadgeInterface ...$badges): self;
+
+	/**
 	 * @param string $badgeClassName
 	 *
 	 * @return \SixtyEightPublishers\DoctrinePersistence\Badge\BadgeInterface|null

@@ -50,7 +50,7 @@ final class CommonContext implements CommonContextInterface
 	 */
 	public function addBadges(BadgeInterface ...$badges): void
 	{
-		$this->badgeBag = $this->badgeBag->with(...$badges);
+		$this->badgeBag->add(...$badges);
 	}
 
 	/**
