@@ -6,6 +6,7 @@ namespace SixtyEightPublishers\DoctrinePersistence;
 
 use Countable;
 use IteratorAggregate;
+use SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBagInterface;
 
 interface TransactionTrackerInterface extends IteratorAggregate, Countable
 {
@@ -13,8 +14,10 @@ interface TransactionTrackerInterface extends IteratorAggregate, Countable
 	 * @internal
 	 *
 	 * @param \SixtyEightPublishers\DoctrinePersistence\TransactionInterface $transaction
+	 *
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBagInterface
 	 */
-	public function track(TransactionInterface $transaction): void;
+	public function track(TransactionInterface $transaction): BadgeBagInterface;
 
 	/**
 	 * @return bool

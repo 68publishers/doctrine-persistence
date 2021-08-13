@@ -9,7 +9,6 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBag;
 use SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBag;
 use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContext;
 use SixtyEightPublishers\DoctrinePersistence\Context\CommonContext;
@@ -145,8 +144,9 @@ final class Transaction implements TransactionInterface
 			throw RuntimeException::transactionAlreadyExecuted();
 		}
 
+		$badgeBag = $this->transactionTracker->track($this);
 		$namedArgumentBag = $this->arguments instanceof ArgumentBagInterface ? $this->arguments : new ArgumentBag($this->arguments);
-		$commonContext = new CommonContext($this->em, $namedArgumentBag, new BadgeBag());
+		$commonContext = new CommonContext($this->em, $namedArgumentBag, $badgeBag);
 
 		$typeHintedArgumentBag = new ArgumentBag([
 			EntityManagerInterface::class => $this->em,
@@ -160,7 +160,6 @@ final class Transaction implements TransactionInterface
 		$this->executed = TRUE;
 		$result = NULL;
 
-		$this->transactionTracker->track($this);
 		$this->em->getConnection()->beginTransaction();
 
 		try {
