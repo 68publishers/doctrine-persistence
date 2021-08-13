@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SixtyEightPublishers\DoctrinePersistence;
 
 use ArrayIterator;
+use SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBag;
+use SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBagInterface;
 use SixtyEightPublishers\DoctrinePersistence\Exception\RuntimeException;
 use SixtyEightPublishers\DoctrinePersistence\Exception\InvalidArgumentException;
 
@@ -12,6 +14,8 @@ final class TransactionTracker implements TransactionTrackerInterface
 {
 	/** @var \SixtyEightPublishers\DoctrinePersistence\TransactionInterface[] */
 	private array $transactions = [];
+
+	private ?BadgeBagInterface $currentBadgeBag = NULL;
 
 	/**
 	 * {@inheritDoc}
@@ -34,7 +38,7 @@ final class TransactionTracker implements TransactionTrackerInterface
 	 *
 	 * @throws \SixtyEightPublishers\DoctrinePersistence\Exception\InvalidArgumentException
 	 */
-	public function track(TransactionInterface $transaction): void
+	public function track(TransactionInterface $transaction): BadgeBagInterface
 	{
 		$hash = spl_object_hash($transaction);
 
@@ -47,9 +51,19 @@ final class TransactionTracker implements TransactionTrackerInterface
 
 		$transaction->finally(function () use ($hash): void {
 			unset($this->transactions[$hash]);
+
+			if (empty($this->transactions)) {
+				$this->currentBadgeBag = NULL;
+			}
 		});
 
+		if (empty($this->transactions) || NULL === $this->currentBadgeBag) {
+			$this->currentBadgeBag = new BadgeBag();
+		}
+
 		$this->transactions[$hash] = $transaction;
+
+		return $this->currentBadgeBag;
 	}
 
 	/**
