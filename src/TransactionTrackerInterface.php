@@ -28,4 +28,12 @@ interface TransactionTrackerInterface extends IteratorAggregate, Countable
 	 * @return \SixtyEightPublishers\DoctrinePersistence\TransactionInterface
 	 */
 	public function getCurrentTransaction(): TransactionInterface;
+
+	/**
+	 * @param string $id
+	 *
+	 * @return \SixtyEightPublishers\DoctrinePersistence\TransactionInterface
+	 * @throws \SixtyEightPublishers\DoctrinePersistence\Exception\InvalidArgumentException
+	 */
+	public function getTransaction(string $id): TransactionInterface;
 }
