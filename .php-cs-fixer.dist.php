@@ -1,13 +1,18 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
+declare(strict_types=1);
+
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+
+$finder = Finder::create()
 	->in(__DIR__ . '/src')
 	->in(__DIR__ . '/tests')
 	->exclude('temp')
 	->name('*.phpt')
 ;
 
-return (new PhpCsFixer\Config())
+return (new Config())
 	->setUsingCache(FALSE)
 	->setIndent("\t")
 	->setRules([
