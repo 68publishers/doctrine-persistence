@@ -1,8 +1,7 @@
 language: php
 
 php:
-  - 7.3
-  #- 7.4 - nette/utils 2.4 is not PHP 7.4 compatible, uncomment this after 2.4 support drop
+  - 7.4
 
 env:
   - TESTER_PHP_BIN="php-cgi"
