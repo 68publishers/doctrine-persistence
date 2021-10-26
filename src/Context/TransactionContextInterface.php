@@ -19,4 +19,11 @@ interface TransactionContextInterface extends CommonContextInterface
 	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\TransactionContextInterface
 	 */
 	public function persist(object $entity): self;
+
+	/**
+	 * @param object $entity
+	 *
+	 * @return \SixtyEightPublishers\DoctrinePersistence\Context\TransactionContextInterface
+	 */
+	public function remove(object $entity): self;
 }
