@@ -87,4 +87,19 @@ final class TransactionTracker implements TransactionTrackerInterface
 
 		return end($this->transactions);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getTransaction(string $id): TransactionInterface
+	{
+		if (!isset($this->transactions[$id])) {
+			throw new InvalidArgumentException(sprintf(
+				'Transaction with ID %s is not tracked.',
+				$id
+			));
+		}
+
+		return $this->transactions[$id];
+	}
 }
