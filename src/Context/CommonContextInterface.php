@@ -11,6 +11,11 @@ use SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface;
 interface CommonContextInterface
 {
 	/**
+	 * @return string
+	 */
+	public function getTransactionId(): string;
+
+	/**
 	 * @return \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface
 	 */
 	public function getArgumentBag(): ArgumentBagInterface;

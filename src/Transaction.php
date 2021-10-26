@@ -67,6 +67,14 @@ final class Transaction implements TransactionInterface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function getId(): string
+	{
+		return spl_object_hash($this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function withArguments(iterable $arguments): TransactionInterface
 	{
 		$callbacks = $this->callbacks;
@@ -146,7 +154,7 @@ final class Transaction implements TransactionInterface
 
 		$badgeBag = $this->transactionTracker->track($this);
 		$namedArgumentBag = $this->arguments instanceof ArgumentBagInterface ? $this->arguments : new ArgumentBag($this->arguments);
-		$commonContext = new CommonContext($this->em, $namedArgumentBag, $badgeBag);
+		$commonContext = new CommonContext($this->getId(), $this->em, $namedArgumentBag, $badgeBag);
 
 		$typeHintedArgumentBag = new ArgumentBag([
 			EntityManagerInterface::class => $this->em,

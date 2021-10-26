@@ -37,4 +37,14 @@ final class TransactionContext implements TransactionContextInterface
 
 		return $this;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function remove(object $entity): TransactionContextInterface
+	{
+		$this->getEntityManager()->remove($entity);
+
+		return $this;
+	}
 }

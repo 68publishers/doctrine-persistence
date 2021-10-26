@@ -11,6 +11,8 @@ use SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface;
 
 final class CommonContext implements CommonContextInterface
 {
+	private string $transactionId;
+
 	private EntityManagerInterface $em;
 
 	private ArgumentBagInterface $argumentBag;
@@ -18,15 +20,25 @@ final class CommonContext implements CommonContextInterface
 	private BadgeBagInterface $badgeBag;
 
 	/**
+	 * @param string                                                                  $transactionId
 	 * @param \Doctrine\ORM\EntityManagerInterface                                    $em
 	 * @param \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface $argumentBag
 	 * @param \SixtyEightPublishers\DoctrinePersistence\Badge\BadgeBagInterface       $badgeBag
 	 */
-	public function __construct(EntityManagerInterface $em, ArgumentBagInterface $argumentBag, BadgeBagInterface $badgeBag)
+	public function __construct(string $transactionId, EntityManagerInterface $em, ArgumentBagInterface $argumentBag, BadgeBagInterface $badgeBag)
 	{
+		$this->transactionId = $transactionId;
 		$this->em = $em;
 		$this->argumentBag = $argumentBag;
 		$this->badgeBag = $badgeBag;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getTransactionId(): string
+	{
+		return $this->transactionId;
 	}
 
 	/**

@@ -13,6 +13,14 @@ trait CommonContextProxyTrait
 	protected CommonContextInterface $commonContext;
 
 	/**
+	 * @return string
+	 */
+	public function getTransactionId(): string
+	{
+		return $this->commonContext->getTransactionId();
+	}
+
+	/**
 	 * @return \SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface
 	 */
 	public function getArgumentBag(): ArgumentBagInterface

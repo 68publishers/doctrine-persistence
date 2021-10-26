@@ -9,6 +9,11 @@ interface TransactionInterface
 	public const ARGUMENT_NAME_RESULT = 'result';
 
 	/**
+	 * @return string
+	 */
+	public function getId(): string;
+
+	/**
 	 * @param iterable $arguments
 	 *
 	 * @return \SixtyEightPublishers\DoctrinePersistence\TransactionInterface

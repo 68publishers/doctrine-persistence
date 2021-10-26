@@ -40,7 +40,7 @@ final class TransactionTracker implements TransactionTrackerInterface
 	 */
 	public function track(TransactionInterface $transaction): BadgeBagInterface
 	{
-		$hash = spl_object_hash($transaction);
+		$hash = $transaction->getId();
 
 		if (isset($this->transactions[$hash])) {
 			throw new InvalidArgumentException(sprintf(
