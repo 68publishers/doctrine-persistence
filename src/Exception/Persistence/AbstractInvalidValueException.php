@@ -16,14 +16,14 @@ abstract class AbstractInvalidValueException extends PersistenceException
 	protected $value;
 
 	/**
-	 * @param string $message
-	 * @param string $entityClassName
-	 * @param string $columnName
-	 * @param $value
+	 * @param string          $message
+	 * @param string          $entityClassName
+	 * @param string          $columnName
+	 * @param                 $value
 	 * @param int             $code
 	 * @param \Throwable|NULL $previous
 	 */
-	public function __construct(string $message, string $entityClassName, string $columnName, $value, int $code = 0, Throwable $previous = NULL)
+	public function __construct(string $message, string $entityClassName, string $columnName, $value, int $code = 0, ?Throwable $previous = NULL)
 	{
 		parent::__construct($message, $code, $previous);
 

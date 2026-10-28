@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\DoctrinePersistence\Helper;
 
+use Throwable;
+use ReflectionType;
 use Nette\StaticClass;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionUnionType;
 use Nette\Utils\Callback;
+use ReflectionIntersectionType;
 use SixtyEightPublishers\DoctrinePersistence\Argument\ArgumentBagInterface;
 use SixtyEightPublishers\DoctrinePersistence\Context\ErrorContextInterface;
 use SixtyEightPublishers\DoctrinePersistence\Exception\CallbackInvocationException;
@@ -56,15 +60,46 @@ final class CallbackInvoker
 				return;
 			}
 
-			$exceptionType = $parameters[1]->getType();
-			$exceptionType = $exceptionType instanceof ReflectionNamedType ? $exceptionType->getName() : NULL;
+			$error = $context->getError();
 
-			if ($context->getError() instanceof $exceptionType) {
-				$callback($context, $context->getError());
+			if (self::acceptsError($parameters[1]->getType(), $error)) {
+				$callback($context, $error);
 			}
 		} catch (ReflectionException $e) {
 			throw CallbackInvocationException::fromReflectionException($e);
 		}
+	}
+
+	/**
+	 * Untyped => any error, union => any of the types, intersection => all of the types.
+	 */
+	private static function acceptsError(?ReflectionType $type, Throwable $error): bool
+	{
+		if ($type instanceof ReflectionNamedType) {
+			$name = $type->getName();
+
+			return $type->isBuiltin() ? in_array($name, ['mixed', 'object'], TRUE) : $error instanceof $name;
+		}
+
+		if ($type instanceof ReflectionUnionType) {
+			foreach ($type->getTypes() as $innerType) {
+				if (self::acceptsError($innerType, $error)) {
+					return TRUE;
+				}
+			}
+
+			return FALSE;
+		}
+
+		if ($type instanceof ReflectionIntersectionType) {
+			foreach ($type->getTypes() as $innerType) {
+				if (!self::acceptsError($innerType, $error)) {
+					return FALSE;
+				}
+			}
+		}
+
+		return TRUE;
 	}
 
 	/**

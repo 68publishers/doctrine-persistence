@@ -14,17 +14,17 @@ final class EntityNotFoundException extends PersistenceException
 	private $identifier;
 
 	/**
-	 * @param string $entityClassName
-	 * @param $identifier
+	 * @param string          $entityClassName
+	 * @param                 $identifier
 	 * @param int             $code
 	 * @param \Throwable|NULL $previous
 	 */
-	public function __construct(string $entityClassName, $identifier, int $code = 0, Throwable $previous = NULL)
+	public function __construct(string $entityClassName, $identifier, int $code = 0, ?Throwable $previous = NULL)
 	{
 		parent::__construct(sprintf(
 			'Entity %s with identifier %s not found.',
 			$entityClassName,
-			(string) $identifier
+			is_array($identifier) ? json_encode($identifier, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR) : (string) $identifier
 		), $code, $previous);
 
 		$this->entityClassName = $entityClassName;

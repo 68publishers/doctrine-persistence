@@ -10,22 +10,24 @@
 		}
 	],
 	"require": {
-		"php": "^7.4 || ^8.1",
+		"php": "^8.3",
 		"ext-json": "*",
-		"nette/utils": "^3.0 || ^4.0",
-		"doctrine/orm": "^2.7"
+		"doctrine/orm": "^2.8 || ^3.0",
+		"nette/utils": "^3.0 || ^4.0"
 	},
 	"require-dev": {
-		"friendsofphp/php-cs-fixer": "^2.19",
-		"mockery/mockery": "^1.4",
-		"nette/application": "^3.0.6",
-		"nette/bootstrap": "^3.0",
-		"nette/di": "^3.0.3",
-		"nette/tester": "^2.3.4",
-		"roave/security-advisories": "dev-master"
+		"friendsofphp/php-cs-fixer": "^3.0",
+		"mockery/mockery": "^1.6.12",
+		"nette/application": "^3.1.8",
+		"nette/bootstrap": "^3.1.2",
+		"nette/di": "^3.0.12",
+		"nette/tester": "^2.6",
+		"roave/security-advisories": "dev-latest"
 	},
 	"suggest": {
-		"nette/di": "For integration into Nette Framework."
+		"nette/di": "For integration into Nette Framework.",
+		"nette/application": "For RedirectTransactionExtender.",
+		"psr/log": "For ErrorLogTransactionExtender."
 	},
 	"autoload": {
 		"psr-4": {
@@ -46,11 +48,11 @@
 			"@tests:lowest",
 			"@tests:highest"
 		],
-		"tests:lowest" : [
+		"tests:lowest": [
 			"@composer update --no-progress --prefer-dist --prefer-lowest --prefer-stable",
 			"vendor/bin/tester ./tests"
 		],
-		"tests:highest" : [
+		"tests:highest": [
 			"@composer update --no-progress --prefer-dist --prefer-stable",
 			"vendor/bin/tester ./tests"
 		]

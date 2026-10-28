@@ -8,8 +8,8 @@ use Mockery;
 use Tester\Assert;
 use ReflectionClass;
 use Tester\TestCase;
-use Nette\Configurator;
 use Nette\DI\Container;
+use Nette\Bootstrap\Configurator;
 use Nette\DI\Definitions\Statement;
 use Doctrine\ORM\EntityManagerInterface;
 use SixtyEightPublishers\DoctrinePersistence\TransactionFactory;
@@ -55,8 +55,6 @@ class DoctrinePersistenceExtensionTestCase extends TestCase
 		Assert::type(TransactionFactoryInterface::class, $transactionFactory);
 
 		$property = (new ReflectionClass(TransactionFactory::class))->getProperty('transactionsExtenders');
-
-		$property->setAccessible(TRUE);
 
 		Assert::equal([
 			0 => [$extender1Service],
