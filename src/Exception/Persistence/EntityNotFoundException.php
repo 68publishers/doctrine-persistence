@@ -24,7 +24,7 @@ final class EntityNotFoundException extends PersistenceException
 		parent::__construct(sprintf(
 			'Entity %s with identifier %s not found.',
 			$entityClassName,
-			is_array($identifier) ? json_encode($identifier, JSON_UNESCAPED_UNICODE) : (string) $identifier
+			is_array($identifier) ? json_encode($identifier, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR) : (string) $identifier
 		), $code, $previous);
 
 		$this->entityClassName = $entityClassName;

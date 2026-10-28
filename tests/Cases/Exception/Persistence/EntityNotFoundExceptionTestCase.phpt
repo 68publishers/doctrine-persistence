@@ -27,6 +27,13 @@ class EntityNotFoundExceptionTestCase extends TestCase
 		Assert::same('Entity App\Entity with identifier {"a":1,"b":"č"} not found.', $e->getMessage());
 		Assert::same(['a' => 1, 'b' => 'č'], $e->getIdentifier());
 	}
+
+	public function testCompositeIdentifierWithInvalidUtf8(): void
+	{
+		$e = new EntityNotFoundException('App\Entity', ['a' => "\xB1"]);
+
+		Assert::same("Entity App\\Entity with identifier {\"a\":\"\u{FFFD}\"} not found.", $e->getMessage());
+	}
 }
 
 (new EntityNotFoundExceptionTestCase())->run();

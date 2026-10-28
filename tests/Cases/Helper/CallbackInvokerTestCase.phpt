@@ -236,6 +236,11 @@ class CallbackInvokerTestCase extends TestCase
 			$called[] = 'mixed';
 		}, $context);
 
+		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, object $e) use (&$called, $error) {
+			Assert::same($error, $e);
+			$called[] = 'object';
+		}, $context);
+
 		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, LogicException|RuntimeException $e) use (&$called) {
 			$called[] = 'union';
 		}, $context);
@@ -252,7 +257,7 @@ class CallbackInvokerTestCase extends TestCase
 			$called[] = 'intersection-no-match';
 		}, $context);
 
-		Assert::same(['untyped', 'mixed', 'union', 'intersection'], $called);
+		Assert::same(['untyped', 'mixed', 'object', 'union', 'intersection'], $called);
 	}
 
 	private function createErrorContext(Throwable $error): ErrorContextInterface

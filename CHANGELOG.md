@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for `doctrine/orm` v3 (and DBAL v4).
 - Suggested packages `nette/application` (for `RedirectTransactionExtender`) and `psr/log` (for `ErrorLogTransactionExtender`).
-- GitHub Actions workflows (coding style, tests on PHP 8.3, 8.4 and 8.5 with lowest and highest dependencies).
+- GitHub Actions workflows (coding style, tests on PHP 8.3, 8.4 and 8.5 with highest dependencies and on PHP 8.3 with lowest dependencies).
 
 ### Changed
 - Minimal PHP version is 8.3.
@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Error callbacks with an untyped, `mixed`, `object`, union or intersection typed exception parameter. Previously, an untyped parameter caused an `Error` ("Class name must be a valid object or a string") that replaced the original exception, and union/intersection types were never invoked.
 - `EntityNotFoundException` with a composite (array) identifier no longer emits "Array to string conversion"; the identifier is rendered as JSON in the message.
+- `EntityNotFoundException` keeps a composite identifier with invalid UTF-8 in the message (the invalid bytes are replaced), previously the identifier was missing.
 
 ## [0.3.1] - 2024-08-06
 ### Changed
