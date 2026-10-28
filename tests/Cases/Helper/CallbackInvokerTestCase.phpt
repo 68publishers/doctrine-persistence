@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SixtyEightPublishers\DoctrinePersistence\Tests\Cases\Helper;
 
 use Mockery;
+use Countable;
 use Exception;
 use Throwable;
 use ArrayObject;
@@ -218,6 +219,40 @@ class CallbackInvokerTestCase extends TestCase
 		}, $context);
 
 		Assert::false($called);
+	}
+
+	public function testShouldInvokeErrorCallbackWithUntypedOrUnionOrIntersectionException(): void
+	{
+		$error = new RuntimeException();
+		$context = $this->createErrorContext($error);
+		$called = [];
+
+		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, $e) use (&$called, $error) {
+			Assert::same($error, $e);
+			$called[] = 'untyped';
+		}, $context);
+
+		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, mixed $e) use (&$called) {
+			$called[] = 'mixed';
+		}, $context);
+
+		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, LogicException|RuntimeException $e) use (&$called) {
+			$called[] = 'union';
+		}, $context);
+
+		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, LogicException|ArrayObject $e) use (&$called) {
+			$called[] = 'union-no-match';
+		}, $context);
+
+		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, RuntimeException&Throwable $e) use (&$called) {
+			$called[] = 'intersection';
+		}, $context);
+
+		CallbackInvoker::tryInvokeErrorCallback(static function (ErrorContextInterface $errorContext, RuntimeException&Countable $e) use (&$called) {
+			$called[] = 'intersection-no-match';
+		}, $context);
+
+		Assert::same(['untyped', 'mixed', 'union', 'intersection'], $called);
 	}
 
 	private function createErrorContext(Throwable $error): ErrorContextInterface

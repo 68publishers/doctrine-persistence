@@ -21,7 +21,7 @@ final class InvalidValueException extends AbstractInvalidValueException
 	 * @param int             $code
 	 * @param \Throwable|NULL $previous
 	 */
-	public function __construct(string $entityClassName, string $columnName, $value, ?string $reason = NULL, int $code = 0, Throwable $previous = NULL)
+	public function __construct(string $entityClassName, string $columnName, $value, ?string $reason = NULL, int $code = 0, ?Throwable $previous = NULL)
 	{
 		parent::__construct(sprintf(
 			'Invalid value %s for column %s::$%s.%s',
@@ -44,7 +44,7 @@ final class InvalidValueException extends AbstractInvalidValueException
 	 *
 	 * @return static
 	 */
-	public static function create(string $entityClassName, string $columnName, $value, ?string $reason = NULL, int $code = 0, Throwable $previous = NULL): self
+	public static function create(string $entityClassName, string $columnName, $value, ?string $reason = NULL, int $code = 0, ?Throwable $previous = NULL): self
 	{
 		return new self($entityClassName, $columnName, $value, $reason, $code, $previous);
 	}

@@ -18,7 +18,7 @@ final class NonDeletableEntityException extends PersistenceException
 	 * @param int             $code
 	 * @param \Throwable|NULL $previous
 	 */
-	public function __construct(object $entity, ?string $reason = NULL, $code = 0, Throwable $previous = NULL)
+	public function __construct(object $entity, ?string $reason = NULL, $code = 0, ?Throwable $previous = NULL)
 	{
 		parent::__construct(sprintf(
 			'Can\'t delete entity of type %s. %s',
